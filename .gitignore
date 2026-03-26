@@ -1,1 +1,15 @@
 *~
+*.1
+Makefile
+Makefile.in
+
+/aclocal.m4
+/autom4te.cache
+/config.h
+/config.h.in
+/configure
+/config.log
+/config.status
+/podwrapper.pl
+/run
+/stamp-h1

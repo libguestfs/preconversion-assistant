@@ -45,6 +45,8 @@ Requirements:
 
 * GCC, G++
 
+* Perl, `Pod::Man`, `Pod::Simple`.  Used to build Linux man pages.
+
 * WxWidgets for GTK, version 3 (Fedora: `wxGTK-devel`)
 
 Build:

@@ -1,0 +1,7 @@
+# Having .gitignore here ensures that git creates the directory.
+
+/compile
+/config.guess
+/config.sub
+/install-sh
+/missing
