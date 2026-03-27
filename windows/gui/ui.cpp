@@ -41,14 +41,14 @@ private:
 bool
 MyApp::OnInit ()
 {
-  MyFrame *frame = new MyFrame();
-  frame->Show();
+  MyFrame *frame = new MyFrame ();
+  frame->Show ();
   return true;
 }
 
 MyFrame::MyFrame ()
-  : wxFrame(nullptr, wxID_ANY,
-            TITLE " " PACKAGE_VERSION_FULL)
+  : wxFrame (nullptr, wxID_ANY,
+             TITLE " " PACKAGE_VERSION_FULL)
 {
   wxMenu *menuFile = new wxMenu;
   menuFile->Append (wxID_EXIT);
@@ -63,6 +63,28 @@ MyFrame::MyFrame ()
   SetMenuBar(menuBar);
   Bind (wxEVT_MENU, &MyFrame::OnAbout, this, wxID_ABOUT);
   Bind (wxEVT_MENU, &MyFrame::OnExit, this, wxID_EXIT);
+
+  wxPanel *panel = new wxPanel (this, -1);
+  wxBoxSizer *vbox = new wxBoxSizer (wxVERTICAL);
+
+  // Features to run
+  wxCheckBox *install_virtio_drivers_cb =
+    new wxCheckBox (panel, wxID_ANY, "Install virtio_drivers");
+  install_virtio_drivers_cb->SetValue (true);
+  vbox->Add (install_virtio_drivers_cb, 0, wxALL | wxEXPAND, 20);
+
+  // Actions
+  wxBoxSizer *hbox = new wxBoxSizer (wxHORIZONTAL);
+  vbox->Add (hbox, 1, wxALL | wxEXPAND, 20);
+  wxButton *begin_button =
+    new wxButton (panel, -1, "Begin preconversion");
+  hbox->Add (begin_button);
+  hbox->AddSpacer (20);
+  wxButton *cancel_button =
+    new wxButton (panel, -1, "Cancel");
+  hbox->Add (cancel_button);
+
+  panel->SetSizer (vbox);
 }
 
 void
