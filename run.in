@@ -59,6 +59,7 @@ export T
 # Set PATH to include binaries.
 prepend PATH "$b/linux"
 prepend PATH "$b/windows"
+prepend PATH "$b/windows/gui"
 
 # Do we have libtool?  If we have it then we can use it to make
 # running valgrind simpler.  However don't depend on it.

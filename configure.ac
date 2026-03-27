@@ -57,12 +57,20 @@ AC_ARG_WITH([extra],
     [extra="$withval"],
     [extra=]
 )
-AC_MSG_NOTICE([Virt-v2v / QEMU Preconversion Assistant version $PACKAGE_VERSION$extra])
 
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_EXTRA],["$extra"],[Extra version string.])
 PACKAGE_VERSION_FULL="$PACKAGE_VERSION$extra"
 AC_DEFINE_UNQUOTED([PACKAGE_VERSION_FULL],["$PACKAGE_VERSION_FULL"],[Full version string.])
 AC_SUBST([PACKAGE_VERSION_FULL])
+
+TITLE="Virt-v2v / QEMU Preconversion Assistant"
+URL="https://github.com/libguestfs/preconversion-assistant"
+
+AC_DEFINE_UNQUOTED([TITLE],["$TITLE"],[Package full title.])
+AC_DEFINE_UNQUOTED([URL],["$URL"],[Package website URL.])
+
+AC_MSG_NOTICE([$TITLE $PACKAGE_VERSION$extra])
+AC_MSG_NOTICE([$URL])
 
 HEADING([Checking for the C compiler environment])
 AC_PROG_CC
@@ -75,12 +83,13 @@ test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
 
 AM_PROG_CC_C_O
 
+AC_PROG_CXX
+
 dnl The C++ compiler test is pretty useless because even if it fails
 dnl it sets CXX=g++.  So test the compiler actually works.
 AC_MSG_CHECKING([if the C++ compiler really really works])
 AS_IF([$CXX --version >&AS_MESSAGE_LOG_FD 2>&1],[have_cxx=yes],[have_cxx=no])
 AC_MSG_RESULT([$have_cxx])
-AM_CONDITIONAL([HAVE_CXX], [test "$have_cxx" = "yes"])
 
 dnl If --enable-compiler-warnings is used, then compiler warnings are
 dnl turned on.
@@ -127,6 +136,7 @@ AC_DEFINE_UNQUOTED([EXEEXT],["$EXEEXT"],[Extension used for executables.])
 AC_DEFINE_UNQUOTED([SOEXT],["$SOEXT"],[Extension used for shared objects/DLLs.])
 
 HEADING([Checking for external programs])
+AC_PROG_LN_S
 
 HEADING([Checking for Perl and podwrapper dependencies])
 AC_CHECK_PROG([PERL],[perl],[perl],[no])
@@ -151,6 +161,36 @@ AC_SUBST([PODWRAPPER])
 
 HEADING([Checking for libraries])
 
+dnl Check for WxWidgets = 3 for the graphical user interfaces.
+AC_CHECK_PROG([WX_CONFIG],[wx-config],[wx-config],[no])
+AC_ARG_WITH([wxwidgets],
+    AS_HELP_STRING([--without-wxwidgets], [disable WxWidgets support @<:@default=check@:>@]))
+AS_IF([test "x$with_wxwidgets" != xno && test "x$WX_CONFIG" != xno], [
+    AC_MSG_CHECKING([for WxWidgets = 3])
+    wx_major_version=`$WX_CONFIG --version | cut -d. -f1`
+    AS_IF([test $wx_major_version -eq 3], [
+        AC_MSG_RESULT([yes])
+        WX_CFLAGS="$($WX_CONFIG --cflags)"
+        WX_LIBS="$($WX_CONFIG --libs)"
+        AC_SUBST([WX_CFLAGS])
+        AC_SUBST([WX_LIBS])
+    ], [
+        AC_MSG_RESULT([no])
+        AC_MSG_WARN([WxWidgets = 3 not found, user interface will not be built.])
+    ])
+])
+AS_IF([test "x$with_wxwidgets" = xyes && test "x$WX_LIBS" = x], [
+    AC_MSG_ERROR([WxWidgets requested but not found])
+])
+
+AM_CONDITIONAL([LINUX_GUI], [test "x$what_is" = "xlinux" &&
+                             test "x$have_cxx" = "xyes" &&
+                             test "x$WX_LIBS" != x])
+
+AM_CONDITIONAL([WINDOWS_GUI], [test "x$what_is" = "xwindows" &&
+                               test "x$have_cxx" = "xyes" &&
+                               test "x$WX_LIBS" != x])
+
 dnl Produce output files.
 HEADING([Generating output files])
 
@@ -163,7 +203,8 @@ AC_CONFIG_FILES([run],
 
 AC_CONFIG_FILES([Makefile
                  linux/Makefile
-                 windows/Makefile])
+                 windows/Makefile
+                 windows/gui/Makefile])
 
 AC_OUTPUT
 
@@ -171,7 +212,7 @@ dnl Produce summary.
 echo
 echo
 echo "------------------------------------------------------------"
-HEADING([Thank you for downloading $PACKAGE_STRING])
+HEADING([Thank you for downloading $TITLE])
 echo
 echo "This is how we have configured the optional components for you today:"
 echo
@@ -196,7 +237,12 @@ feature ()
     printf "$term_restore"
 }
 
-#...
+feature "compiler warnings"   test "x$COMPILER_WARNINGS_TRUE" = "x"
+feature "WxWidgets"           test "x$WX_LIBS" != "x"
+feature "Linux build"         test "x$LINUX_TRUE" = "x"
+feature "With Linux GUI"      test "x$LINUX_GUI_TRUE" = "x"
+feature "Windows build"       test "x$WINDOWS_TRUE" = "x"
+feature "With Windows GUI"    test "x$WINDOWS_GUI_TRUE" = "x"
 
 echo
 echo "If any optional component is configured 'no' when you expected 'yes'"

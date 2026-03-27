@@ -34,9 +34,9 @@ endif
 
 if WINDOWS
 SUBDIRS += windows
-# if WINDOWS_GUI
-# SUBDIRS += windows/gui
-# endif
+if WINDOWS_GUI
+SUBDIRS += windows/gui
+endif
 endif
 
 # NB. podwrapper is an internal tool, so the man page mustn't be installed.
