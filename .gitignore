@@ -16,3 +16,9 @@ Makefile.in
 /podwrapper.pl
 /run
 /stamp-h1
+
+# Ignore local build directories
+/build*
+
+# Ignore local* files for things like ./localconfigure
+/local*

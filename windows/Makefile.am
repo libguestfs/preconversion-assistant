@@ -17,3 +17,11 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+bin_PROGRAMS = windows-pca
+
+windows_pca_SOURCES = \
+	main.c \
+	$(NULL)
+windows_pca_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(NULL)

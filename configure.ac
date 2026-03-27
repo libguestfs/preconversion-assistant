@@ -109,13 +109,22 @@ AC_DEFINE_UNQUOTED([host_os],["$host_os"],[Host operating system.])
 
 AC_MSG_CHECKING([if this is Linux or Windows])
 AS_CASE([$host_os],
-    [linux-gnu],    [ what_is=linux ],
-    [mingw*|msys*], [ what_is=windows ],
+    [linux-gnu],    [
+        what_is=linux
+        SOEXT=so
+    ],
+    [mingw*|msys*], [
+        what_is=windows
+        SOEXT=dll
+    ],
     [ AC_MSG_ERROR([Unknown host operating system ($host_os)]) ]
 )
 AC_MSG_RESULT([$what_is])
 AM_CONDITIONAL([LINUX],[test "x$what_is" = "xlinux"])
 AM_CONDITIONAL([WINDOWS],[test "x$what_is" = "xwindows"])
+
+AC_DEFINE_UNQUOTED([EXEEXT],["$EXEEXT"],[Extension used for executables.])
+AC_DEFINE_UNQUOTED([SOEXT],["$SOEXT"],[Extension used for shared objects/DLLs.])
 
 HEADING([Checking for external programs])
 
