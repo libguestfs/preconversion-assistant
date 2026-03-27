@@ -17,3 +17,11 @@
 
 include $(top_srcdir)/subdir-rules.mk
 
+bin_PROGRAMS = linux-pca
+
+linux_pca_SOURCES = \
+	main.c \
+	$(NULL)
+linux_pca_CFLAGS = \
+	$(WARNINGS_CFLAGS) \
+	$(NULL)

@@ -75,6 +75,31 @@ test "x$U" != "x" && AC_MSG_ERROR([Compiler not ANSI compliant])
 
 AM_PROG_CC_C_O
 
+dnl The C++ compiler test is pretty useless because even if it fails
+dnl it sets CXX=g++.  So test the compiler actually works.
+AC_MSG_CHECKING([if the C++ compiler really really works])
+AS_IF([$CXX --version >&AS_MESSAGE_LOG_FD 2>&1],[have_cxx=yes],[have_cxx=no])
+AC_MSG_RESULT([$have_cxx])
+AM_CONDITIONAL([HAVE_CXX], [test "$have_cxx" = "yes"])
+
+dnl If --enable-compiler-warnings is used, then compiler warnings are
+dnl turned on.
+AC_ARG_ENABLE([compiler-warnings],
+    [AS_HELP_STRING([--enable-compiler-warnings],
+                    [turn on compiler warnings (for developers)])],
+     [case $enableval in
+      yes|no) ;;
+      *)      AC_MSG_ERROR([bad value $enableval for compiler-warnings option]) ;;
+      esac
+      compiler_warnings=$enableval],
+      [compiler_warnings=no]
+)
+if test "x$compiler_warnings" = "xyes"; then
+    WARNINGS_CFLAGS="-Wall -Wshadow -Wvla -Werror"
+    AC_SUBST([WARNINGS_CFLAGS])
+fi
+AM_CONDITIONAL([COMPILER_WARNINGS], [test "$compiler_warnings" = "yes"])
+
 dnl Define the host CPU architecture (defines 'host_cpu').
 AC_CANONICAL_HOST
 AC_DEFINE_UNQUOTED([host_cpu],["$host_cpu"],[Host architecture.])

@@ -1,5 +1,7 @@
 *~
 *.1
+*.o
+.deps
 Makefile
 Makefile.in
 
@@ -10,6 +12,7 @@ Makefile.in
 /configure
 /config.log
 /config.status
+/linux/linux-pca
 /podwrapper.pl
 /run
 /stamp-h1
